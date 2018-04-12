@@ -415,7 +415,9 @@
 		/* {Number} Scheduled zoom level (final scale when animating) */
 		__scheduledZoom: 0,
 
+		__refreshPullStart: false,
 
+		__refreshPullStartFun:null,
 
 		/*
 		---------------------------------------------------------------------------
@@ -551,7 +553,7 @@
 		 * @param deactivateCallback {Function} Callback to execute on deactivation. This is for signalling the user about the refresh being cancelled.
 		 * @param startCallback {Function} Callback to execute to start the real async refresh action. Call {@link #finishPullToRefresh} after finish of refresh.
 		 */
-		activatePullToRefresh: function(height, activateCallback, deactivateCallback, startCallback) {
+		activatePullToRefresh: function(height, activateCallback, deactivateCallback, startCallback, pullStartCallback) {
 
 			var self = this;
 
@@ -559,6 +561,7 @@
 			self.__refreshActivate = activateCallback;
 			self.__refreshDeactivate = deactivateCallback;
 			self.__refreshStart = startCallback;
+			self.__refreshPullStartFun = pullStartCallback;
 
 		},
 
@@ -584,6 +587,7 @@
 
 			var self = this;
 
+			self.__refreshPullStart = false;
 			self.__refreshActive = false;
 			if (self.__refreshDeactivate) {
 				self.__refreshDeactivate();
@@ -1043,6 +1047,15 @@
 							// Support pull-to-refresh (only when only y is scrollable)
 							if (!self.__enableScrollX && self.__refreshHeight != null) {
 
+								if (!self.__refreshPullStart && scrollTop <= -20 && scrollTop > -self.__refreshHeight) {
+
+									self.__refreshPullStart = true;
+									if (self.__refreshPullStartFun) {
+										self.__refreshPullStartFun();
+									}
+								
+								}
+								
 								if (!self.__refreshActive && scrollTop <= -self.__refreshHeight) {
 
 									self.__refreshActive = true;
@@ -1052,6 +1065,7 @@
 
 								} else if (self.__refreshActive && scrollTop > -self.__refreshHeight) {
 
+									self.__refreshPullStart = false;
 									self.__refreshActive = false;
 									if (self.__refreshDeactivate) {
 										self.__refreshDeactivate();
@@ -1216,8 +1230,9 @@
 					self.scrollTo(self.__scrollLeft, self.__scrollTop, true, self.__zoomLevel);
 
 					// Directly signalize deactivation (nothing todo on refresh?)
-					if (self.__refreshActive) {
+					if (self.__refreshActive ||self. __refreshPullStart) {
 
+						self.__refreshPullStart = false;
 						self.__refreshActive = false;
 						if (self.__refreshDeactivate) {
 							self.__refreshDeactivate();

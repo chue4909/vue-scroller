@@ -8,7 +8,7 @@
     @mouseup="mouseUp($event)"
   >
     <div class="_v-content" :id="contentId">
-      <div v-if="onRefresh" class="pull-to-refresh-layer"
+      <div v-if="onRefresh" class="pull-to-refresh-layer" :style="{opacity:(state? 1 : 0)}"
         :class="{'active': state == 1, 'active refreshing': state == 2}"
       >
         <span class="spinner-holder">
@@ -337,6 +337,8 @@
           })
 
           this.onRefresh(this.finishPullToRefresh)
+        }, () => {
+          this.state = 3
         })
       }
 
