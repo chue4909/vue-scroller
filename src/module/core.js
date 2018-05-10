@@ -1008,7 +1008,6 @@
 				}
 
 				if (self.__enableScrollX && (Math.abs(moveX) > Math.abs(moveY))) {
-					console.log(moveX, moveY)
 					scrollLeft -= moveX * this.options.speedMultiplier;
 					var maxScrollLeft = self.__maxScrollLeft;
 
