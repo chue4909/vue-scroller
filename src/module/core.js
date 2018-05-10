@@ -1007,8 +1007,8 @@
 					}
 				}
 
-				if (self.__enableScrollX) {
-
+				if (self.__enableScrollX && (Math.abs(moveX) > Math.abs(moveY))) {
+					console.log(moveX, moveY)
 					scrollLeft -= moveX * this.options.speedMultiplier;
 					var maxScrollLeft = self.__maxScrollLeft;
 
@@ -1032,8 +1032,8 @@
 				}
 
 				// Compute new vertical scroll position
-				if (self.__enableScrollY) {
-
+				if (self.__enableScrollY && (Math.abs(moveX) < Math.abs(moveY))) {
+					
 					scrollTop -= moveY * this.options.speedMultiplier;
 					var maxScrollTop = self.__maxScrollTop;
 
